@@ -17,9 +17,12 @@ function handleHttpRequest(request, response) {
             handleMandelbrotRequest(request, response);
             break;
         default:
-            response.statusCode = 400;
-            response.end("Invalid request");
-            
+            if(params.id) {
+                //TODO: Serve local resource by ID
+            } else {
+                response.statusCode = 400;
+                response.end("Invalid request");
+            }
     }
 }
 
