@@ -17,7 +17,7 @@ function initModuleSync(binPath, palettePath) {
         path_bin = binPath;
         initialized = true;
     } else {
-        return new Error("Cannot access specified binary");
+        throw Error("Cannot access specified binary");
         initialized = false;
     }
 }
@@ -26,7 +26,7 @@ function setPaletteSync(palettePath) {
     if(fs.accessSync(palettePath, fs.constants.R_OK)) {
         path_plte = palettePath;
     } else {
-        return new Error("Cannot read palette file");
+        throw Error("Cannot read palette file");
     }
 }
 
@@ -35,17 +35,17 @@ function setDestPathSync(destPath) {
         if(fs.statSync(destPath).isDirectory) {
             path_dest = destPath;
         } else {
-            return new Error("Specified path is not a directory");
+            throw Error("Specified path is not a directory");
         }
     } else {
-        return new Error("Cannot access specified path");
+        throw Error("Cannot access specified path");
     }
 }
         
 performRequest(req, callback) {
     if(!initialized) {
         req.finished = false;
-        return new Error("Module not initialized; cannot handle requests");
+        throw Error("Module not initialized; cannot handle requests");
     }
     //Set undefined parameters to their default values
     
