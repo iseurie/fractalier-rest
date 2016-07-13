@@ -15,6 +15,8 @@ mandelbrot.init();
 mandelbrot.set_plte_sync("/home/eurie/writing/code/fractalier/blues.map");
 mandelbrot.set_dest_path_sync("/etc/fractalier/out");
 
+var pubAddr = getIP();
+
 function handleRestRequest(request, response) {
     var params = url.parse(request.url, true);
     switch(params.t) {
@@ -64,10 +66,15 @@ function handleMandelbrotRequest(request, response) {
             response.end(err);
         } else if (req.finished) {
             //TODO: Redirect to a temporary resource matching the ID of the request
-            var ip = getIP();
             response.writeHead(301, {
-                "Location":"http://" + ip + '/' + req.id
+                "Location":"http://" + pubAddr + '/' + req.id
             });
             response.end();
         }
 }
+
+var restServer = http.createServer(handleRestRequest);
+
+restServer.listen(PORT, function() {
+    console.log("Listening for requests on http://%s:%s", pubAddr, PORT);
+});
