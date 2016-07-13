@@ -3,6 +3,7 @@ module.exports.perform_request = performRequest;
 module.exports.set_plte_sync = setPaletteSync;
 module.exports.set_dest_path_sync = setDestPathSync;
 
+module.exports.path_dest = path_dest
 const execFile = require('child_process').execFile;
 const fs = require('fs');
 
@@ -58,7 +59,7 @@ performRequest(req, callback) {
     if(!req.extense_imag)       req.extense_imag = "2.9";
 
     if(!req.mapFilePath)        req.mapFilePath = path_plte;
-    if(!req.outFileName)        req.outFileName = "test.png";
+    if(!req.outFileName)        req.outFileName = req.id + ".png";
     
     var outFilePath = path_dest + '/' + req.outFileName;
     var err = execFile(path_bin, ["--anchor_real", req.anchor_real,
@@ -69,7 +70,7 @@ performRequest(req, callback) {
                         "--height", req.height,
                         "--width", req.width,
                         "--output", outFilePath]);
-    //TODO: implement uploads of generated files to database for archive by ID
+    //TODO: implement uploads of generated files to resource hosts for archive in database by ID
     if(!err) {
         req.finished = true;
     } else {
