@@ -36,23 +36,23 @@ function setDestPathSync(destPath) {
 function performRequest(req, callback) {
     req.finished = false;
     //Set undefined parameters to their default values
-    if(typeof(req.depth) === "undefined")              req.depth = "255";
-    if(typeof(req.width) === "undefined") req.width = "1024";
-    if(typeof(req.height) === "undefined") req.height = "768";
+    if(!req.depth)              req.depth = "255";
+    if(!req.width)              req.width = "1024";
+    if(!req.height)             req.height = "768";
     //canonical Mandelbrot properties
-    if(typeof(req.anchor_real) === "undefined") req.anchor_real = "-2.2"; 
-    if(typeof(req.anchor_imag) === "undefined") req.anchor_imag = "-1.7";
-    if(typeof(req.extense_real) === "undefined") req.extense_real = "3.4"; 
-    if(typeof(req.extense_imag) === "undefined") req.extense_imag = "2.9";
+    if(!req.anchor_real)        req.anchor_real = "-2.2"; 
+    if(!req.anchor_imag)        req.anchor_imag = "-1.7";
+    if(!req.extense_real)       req.extense_real = "3.4"; 
+    if(!req.extense_imag)       req.extense_imag = "2.9";
 
-    if(typeof(req.mapFilePath) === "undefined") req.mapFilePath = path_plte;
-    if(typeof(req.outFileName) === "undefined") req.outFileName = req.id + ".png";
+    if(!req.mapFilePath)        req.mapFilePath = path_plte;
+    if(!req.outFileName)        req.outFileName = req.id + ".png";
     
     var outFilePath = path_dest + '/' + req.outFileName;
     execFile(path_bin, ["--anchor_real", req.anchor_real,
-                        "--anchor_imag", req.anchor_imaginary,
-                        "--extense_real", req.anchor_real,
-                        "--extense_imag", req.anchor_imaginary,
+                        "--anchor_imag", req.anchor_imag,
+                        "--extense_real", req.extense_real,
+                        "--extense_imag", req.extense_imag,
                         "--depth", req.depth,
                         "--height", req.height,
                         "--width", req.width,
