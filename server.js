@@ -3,8 +3,6 @@
 var http = require('http');
 var url = require('url');
 var mandelbrot = require('./mandelbrot');
-var unixtstamp = require('unix-timestamp');
-var math = require('math');
 var getIP = require('external-ip')();
 var fs = require('fs');
 
@@ -13,7 +11,7 @@ const PORT = 8080;
 //Module configuration
 mandelbrot.init_sync("/home/eurie/writing/code/fractalier/fractalier-gen");
 mandelbrot.set_plte_sync("/home/eurie/writing/code/fractalier/blues.map");
-mandelbrot.set_dest_path_sync("/home/eurie/writing/code/");
+mandelbrot.set_dest_path_sync("/home/eurie/writing/code");
 
 var pubAddr;
 getIP(function (err, ip) {
@@ -25,7 +23,9 @@ getIP(function (err, ip) {
 var queryParams;
 function handleRestRequest(request, response) {
     queryParams = url.parse(request.url, true).query;
-    switch(queryParams.t) {
+    console.log("Serving request from " + request.connection.remoteAddress
+            + " (type '" + queryParams.t + "')");
+     switch(queryParams.t) {
         case 'm':
             handleMandelbrotRequest(request, response);
             break;
@@ -39,13 +39,13 @@ function handleResourceRequest(request, response) {
         response.writeHead(400, { "Content-Type" : "text/plain" });
         response.end("400 Bad Request: Resource ID not specified");
     }
-    var resPath = mandelbrot.path_dest + '/' + params.id + ".png";
+    var resPath = mandelbrot.path_dest + '/' + queryParams.id + ".png";
     
     try {
         fs.statSync(resPath);
     } catch (e) {
         response.writeHead(404, { "Content-Type" : "text/plain" });
-        response.end("404: Cannot stat resource '" + params.id + "'");
+        response.end("404: Cannot stat resource '" + queryParams.id + "'");
         return;
     }
 
@@ -71,11 +71,11 @@ function handleMandelbrotRequest(request, response) {
         width           : params.query.w,
         height          : params.query.h,
         depth           : params.query.d, 
-        id              : unixtstamp.now() + ':' + 
-                            math.randomInt(1000, 9999)
+        id              : Math.floor(new Date() / 1000) + ':' + 
+                            Math.floor(Math.random() * (9999 - 1000 + 1) + 1000)
     }
 
-    mandelbrot.perform(req, function onRequestPerformed(err, outFilePath) {
+    mandelbrot.perform_request(req, function onRequestPerformed(err, outFilePath) {
         if(err) {
             response.writeHead(500, { "Content-Type" : "text/plain" });
             response.end("Internal server error: " + err);
