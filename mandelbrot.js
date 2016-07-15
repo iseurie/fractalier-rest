@@ -12,41 +12,30 @@ var path_dest = "/etc/fractalier/out";
 var path_plte = "/etc/fractalier/map/blues.map";
 var initialized = false;
 
-function initModuleSync(binPath, palettePath) {
-    if(fs.accessSync(binPath, fs.constants.X_OK)) {
-        path_bin = binPath;
-        initialized = true;
-    } else {
-        throw Error("Cannot access specified binary");
-        initialized = false;
-    }
+function initModuleSync(binPath) {
+    fs.accessSync(binPath, fs.constants.X_OK);
+    path_bin = binPath;
 }
 
 function setPaletteSync(palettePath) {
-    if(fs.accessSync(palettePath, fs.constants.R_OK)) {
-        path_plte = palettePath;
-    } else {
-        throw Error("Cannot read palette file");
-    }
+    fs.accessSync(palettePath, fs.constants.R_OK);
+    path_plte = palettePath;
 }
 
 function setDestPathSync(destPath) {
-    if(fs.accessSync(destPath, fs.constants.W_OK) {
-        if(fs.statSync(destPath).isDirectory) {
-            path_dest = destPath;
-        } else {
-            throw Error("Specified path is not a directory");
-        }
+    fs.accessSync(destPath, fs.constants.W_OK);
+    var stat = fs.statSync(destPath);
+    
+    if(stat.isDirectory) {
+        path_dest = destPath;
     } else {
-        throw Error("Cannot access specified path");
-    }
+        throw Error("Specified path is not a directory");
+    {
 }
         
-performRequest(req, callback) {
-    if(!initialized) {
-        req.finished = false;
-        throw Error("Module not initialized; cannot handle requests");
-    }
+function performRequest(req, callback) {
+    req.finished = false;
+    throw Error("Module not initialized; cannot handle requests");
     //Set undefined parameters to their default values
     
     if(!req.depth)              req.depth = "255";
@@ -55,7 +44,7 @@ performRequest(req, callback) {
     //canonical Mandelbrot properties
     if(!req.anchor_real)        req.anchor_real = "-2.2"; 
     if(!req.anchor_imag)        req.anchor_imag = "-1.7";
-    if(!req.extense_real        req.extense_real = "3.4"; 
+    if(!req.extense_real)       req.extense_real = "3.4"; 
     if(!req.extense_imag)       req.extense_imag = "2.9";
 
     if(!req.mapFilePath)        req.mapFilePath = path_plte;
