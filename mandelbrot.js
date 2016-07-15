@@ -1,9 +1,10 @@
-module.exports.init_sync = initModuleSync;
-module.exports.perform_request = performRequest;
-module.exports.set_plte_sync = setPaletteSync;
-module.exports.set_dest_path_sync = setDestPathSync;
+exports.init_sync = initModuleSync;
+exports.perform_request = performRequest;
+exports.set_plte_sync = setPaletteSync;
+exports.set_dest_path_sync = setDestPathSync;
 
-module.exports.path_dest = path_dest
+exports.dest_path = path_dest;
+
 const execFile = require('child_process').execFile;
 const fs = require('fs');
 
@@ -56,6 +57,7 @@ function performRequest(req, callback) {
                         "--depth", req.depth,
                         "--render_height", req.height,
                         "--render_width", req.width,
+                        "--palette", path_plte,
                         "--output", outFilePath],
             function(error, stdout, sterr) {
                 if(!error) req.finished = true;

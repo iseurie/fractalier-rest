@@ -9,9 +9,10 @@ var fs = require('fs');
 const PORT = 8080;
 
 //Module configuration
+var destPath = "/home/eurie/writing/code/fractalier-rest";
 mandelbrot.init_sync("/home/eurie/writing/code/fractalier/fractalier-gen");
 mandelbrot.set_plte_sync("/home/eurie/writing/code/fractalier/blues.map");
-mandelbrot.set_dest_path_sync("/home/eurie/writing/code");
+mandelbrot.set_dest_path_sync(destPath);
 
 var pubAddr;
 getIP(function (err, ip) {
@@ -35,17 +36,14 @@ function handleRestRequest(request, response) {
 }
 
 function handleResourceRequest(request, response) {
-    if(!queryParams.id) {
-        response.writeHead(400, { "Content-Type" : "text/plain" });
-        response.end("400 Bad Request: Resource ID not specified");
-    }
-    var resPath = mandelbrot.path_dest + '/' + queryParams.id + ".png";
-    
+    var parsed = url.parse(request.url, true);
+    var resPath = destPath + parsed.pathname + ".png";
+
     try {
         fs.statSync(resPath);
     } catch (e) {
         response.writeHead(404, { "Content-Type" : "text/plain" });
-        response.end("404: Cannot stat resource '" + queryParams.id + "'");
+        response.end("404: Cannot stat resource at '" + resPath + "'");
         return;
     }
 
@@ -57,8 +55,15 @@ function handleResourceRequest(request, response) {
         return;
     }
 
+    var buf;
+    try {
+        buf = fs.readFileSync(resPath)
+    } catch(e) {
+        response.writeHead(500, { "Content-Type" : "text/plain" });
+        response.end("500: Internal server error; failed to read image at '" + resPath + "'");
+    }
     response.writeHead(200, { "Content-Type" : "image/png" });
-    response.end(fs.readFile(resPath));
+    response.end(buf);
 }
 
 function handleMandelbrotRequest(request, response) {
@@ -78,11 +83,12 @@ function handleMandelbrotRequest(request, response) {
     mandelbrot.perform_request(req, function onRequestPerformed(err, outFilePath) {
         if(err) {
             response.writeHead(500, { "Content-Type" : "text/plain" });
-            response.end("Internal server error: " + err);
+            response.end("500: Internal server error; " + err);
         } else /*if (req.finished)*/ {
             //TODO: Redirect to a temporary resource matching the ID of the request
             response.writeHead(301, {
-                "Location" : "http://" + pubAddr + ':' + PORT + '/' + req.id,
+                "Location" : "http://" + pubAddr 
+                    + ':' + PORT + '/' + req.id + ".png",
                 "Content-Type" : "text/plain"
             });
             while(typeof(pubAddr) === "undefined") {
