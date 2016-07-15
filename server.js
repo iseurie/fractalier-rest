@@ -6,7 +6,6 @@ var mandelbrot = require('./mandelbrot');
 var unixtstsamp = require('unix-timestamp');
 var math = require('math');
 var getIP = require('external-ip')();
-var deasync = require('deasync');
 var fs = require('fs');
 
 const PORT = 8080;
@@ -25,15 +24,11 @@ getIP(function (err, ip) {
 var params;
 function handleRestRequest(request, response) {
     params = url.parse(request.url, true);
-    switch(params.t) {
-        case 'm':
-            handleMandelbrotRequest(request, response);
-            break;
-        case 't':
-            //Do nothing; descend to default case
-        default:
-            handleResourceRequest(request, response);
+    if(params.m) { 
+        handleMandelbrotRequest(request, response); 
+        return;
     }
+    handleResourceRequest(request, response);
 }
 
 function handleResourceRequest(request, response) {
