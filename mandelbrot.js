@@ -35,9 +35,7 @@ function setDestPathSync(destPath) {
         
 function performRequest(req, callback) {
     req.finished = false;
-    throw Error("Module not initialized; cannot handle requests");
     //Set undefined parameters to their default values
-    
     if(!req.depth)              req.depth = "255";
     if(!req.width)              req.width = "1024";
     if(!req.height)             req.height = "768";
