@@ -6,6 +6,7 @@ var mandelbrot = require('./mandelbrot');
 var unixtstsamp = require('unix-timestamp');
 var math = require('math');
 var getIP = require('external-ip')();
+var deasync = require('deasync');
 var fs = require('fs');
 
 const PORT = 8080;
@@ -13,12 +14,17 @@ const PORT = 8080;
 //Module configuration
 mandelbrot.init_sync("/home/eurie/writing/code/fractalier/fractalier-gen");
 mandelbrot.set_plte_sync("/home/eurie/writing/code/fractalier/blues.map");
-mandelbrot.set_dest_path_sync("/etc/fractalier/out");
+mandelbrot.set_dest_path_sync("/home/eurie/writing/code/");
 
-var pubAddr = getIP();
+var pubAddr;
+getIP(function (err, ip) {
+    if(err) { throw err; }
+    pubAddr = ip;
+});
 
+var params;
 function handleRestRequest(request, response) {
-    var params = url.parse(request.url, true);
+    params = url.parse(request.url, true);
     switch(params.t) {
         case 'm':
             handleMandelbrotRequest(request, response);
@@ -81,6 +87,9 @@ function handleMandelbrotRequest(request, response) {
                 "Location" : "http://" + pubAddr + ':' + PORT + '/' + req.id,
                 "Content-Type" : "text/plain"
             });
+            while(typeof(pubAddr) === "undefined") {
+                //block until pubAddr is found
+            }
             response.end("Redirecting to resID " + req.id + "...");
         }
     });
