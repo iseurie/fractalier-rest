@@ -30,7 +30,7 @@ function setDestPathSync(destPath) {
         path_dest = destPath;
     } else {
         throw Error("Specified path is not a directory");
-    {
+    }
 }
         
 function performRequest(req, callback) {
