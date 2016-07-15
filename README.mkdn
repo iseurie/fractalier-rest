@@ -1,3 +1,4 @@
-#Fractalier-REST
-_Fractalier-REST_ is the REST-HTTP interface implementation of Fractalier, and hosts a node.js server loop which serves clients with 301 redirects to server-side 
+#Fractalier-RESTful
+_Fractalier-RESTful_ is the RESTful HTTP interface implementation of 
+Fractalier in node.js, which serves clients with redirects to server-side 
 renderings, and performs the task of archiving each new request.
