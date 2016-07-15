@@ -54,8 +54,8 @@ function performRequest(req, callback) {
                         "--extense_real", req.extense_real,
                         "--extense_imag", req.extense_imag,
                         "--depth", req.depth,
-                        "--height", req.height,
-                        "--width", req.width,
+                        "--render_height", req.height,
+                        "--render_width", req.width,
                         "--output", outFilePath],
             function(error, stdout, sterr) {
                 if(!error) req.finished = true;
