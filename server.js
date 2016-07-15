@@ -3,7 +3,7 @@
 var http = require('http');
 var url = require('url');
 var mandelbrot = require('./mandelbrot');
-var unixtstsamp = require('unix-timestamp');
+var unixtstamp = require('unix-timestamp');
 var math = require('math');
 var getIP = require('external-ip')();
 var fs = require('fs');
@@ -19,20 +19,23 @@ var pubAddr;
 getIP(function (err, ip) {
     if(err) { throw err; }
     pubAddr = ip;
+    console.log("Public IP found: " + ip);
 });
 
-var params;
+var queryParams;
 function handleRestRequest(request, response) {
-    params = url.parse(request.url, true);
-    if(params.m) { 
-        handleMandelbrotRequest(request, response); 
-        return;
+    queryParams = url.parse(request.url, true).query;
+    switch(queryParams.t) {
+        case 'm':
+            handleMandelbrotRequest(request, response);
+            break;
+        default:
+            handleResourceRequest(request, response);
     }
-    handleResourceRequest(request, response);
 }
 
 function handleResourceRequest(request, response) {
-    if(!params.id) {
+    if(!queryParams.id) {
         response.writeHead(400, { "Content-Type" : "text/plain" });
         response.end("400 Bad Request: Resource ID not specified");
     }
@@ -61,13 +64,13 @@ function handleResourceRequest(request, response) {
 function handleMandelbrotRequest(request, response) {
     var params = url.parse(request.url, true);
     var req = {
-        anchor_real     : params.ctr_r,
-        anchor_imag     : params.ctr_i,
-        extense_real    : params.ext_r,
-        extense_imag    : params.ext_i,
-        width           : params.w,
-        height          : params.h,
-        depth           : params.d, 
+        anchor_real     : params.query.ctr_r,
+        anchor_imag     : params.query.ctr_i,
+        extense_real    : params.query.ext_r,
+        extense_imag    : params.query.ext_i,
+        width           : params.query.w,
+        height          : params.query.h,
+        depth           : params.query.d, 
         id              : unixtstamp.now() + ':' + 
                             math.randomInt(1000, 9999)
     }
